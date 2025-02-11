@@ -32,8 +32,9 @@ class _HomePageState extends State<HomePage> {
       isLoading = true;
     });
     try {
-      final response = await http.get(Uri.parse(
-          'https://www.themealdb.com/api/json/v1/1/search.php?s=$searchText'));
+      final url = Uri.parse(
+          'https://www.themealdb.com/api/json/v1/1/search.php?s=${Uri.encodeComponent(searchText)}');
+      final response = await http.get(url);
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         final mealsData = jsonData['meals'] as List?;
