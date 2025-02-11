@@ -12,7 +12,7 @@ migrate_working_dir/
 .env
 
 # IntelliJ related
-*.iml
+
 *.ipr
 *.iws
 .idea/
@@ -26,8 +26,6 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
 .pub-cache/
 .pub/
 /build/
