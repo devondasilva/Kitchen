@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'favoris.dart';
 import 'meal.dart';
 import 'login.dart';
 
@@ -15,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   String searchText = '';
   List<Meal> meals = [];
   List<Meal> filteredMeals = [];
+  Set<String> favoriteMeals = {};
   bool isLoading = true;
   final PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
@@ -68,9 +70,28 @@ class _HomePageState extends State<HomePage> {
         case 0:
           break;
         case 1:
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FavoritesPage(
+                meals: meals,
+                favoriteMeals: favoriteMeals,
+              ),
+            ),
+          );
           break;
         case 2:
           break;
+      }
+    });
+  }
+
+  void _toggleFavorite(String mealId) {
+    setState(() {
+      if (favoriteMeals.contains(mealId)) {
+        favoriteMeals.remove(mealId);
+      } else {
+        favoriteMeals.add(mealId);
       }
     });
   }
@@ -167,7 +188,11 @@ class _HomePageState extends State<HomePage> {
                   delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
                       final meal = filteredMeals[index];
-                      return MealCard(meal: meal, isFavorited: false,);
+                      return MealCard(
+                        meal: meal,
+                        favoriteMeals: favoriteMeals,
+                        onFavoritePressed: _toggleFavorite,
+                      );
                     },
                     childCount: filteredMeals.length,
                   ),
@@ -200,12 +225,31 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class MealCard extends StatelessWidget {
-  List<String> favoriteMeals = [];
+class MealCard extends StatefulWidget {
   final Meal meal;
-  bool isFavorited = false; // État du favori
+  final Set<String> favoriteMeals; // Liste des favoris
+  final Function(String) onFavoritePressed; // Callback pour mettre à jour les favoris
 
-   MealCard({Key? key, required this.meal, required this.isFavorited}) : super(key: key);
+  const MealCard({
+    Key? key,
+    required this.meal,
+    required this.favoriteMeals,
+    required this.onFavoritePressed,
+  }) : super(key: key);
+
+  @override
+  _MealCardState createState() => _MealCardState();
+}
+
+class _MealCardState extends State<MealCard> {
+  bool isFavorited = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialise l'état du favori en fonction de la liste des favoris
+    isFavorited = widget.favoriteMeals.contains(widget.meal.idMeal);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +258,7 @@ class MealCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MealDetailsPage(meal: meal),
+            builder: (context) => MealDetailsPage(meal: widget.meal),
           ),
         );
       },
@@ -233,7 +277,7 @@ class MealCard extends StatelessWidget {
                 topRight: Radius.circular(12.0),
               ),
               child: Image.network(
-                meal.strMealThumb,
+                widget.meal.strMealThumb,
                 height: 200,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -257,7 +301,7 @@ class MealCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          meal.strMeal,
+                          widget.meal.strMeal,
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge!
@@ -272,38 +316,27 @@ class MealCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.category,
-                          size: 16, color: Colors.grey),
+                      const Icon(Icons.category, size: 16, color: Colors.grey),
                       const SizedBox(width: 4),
-                      Text('Catégorie : ${meal.strCategory}',
+                      Text('Catégorie : ${widget.meal.strCategory}',
                           style: const TextStyle(color: Colors.grey)),
                       const SizedBox(width: 16),
-                      const Icon(Icons.location_on,
-                          size: 16, color: Colors.grey),
+                      const Icon(Icons.location_on, size: 16, color: Colors.grey),
                       const SizedBox(width: 4),
-                      Text('Région : ${meal.strArea}',
+                      Text('Région : ${widget.meal.strArea}',
                           style: const TextStyle(color: Colors.grey)),
                       const SizedBox(width: 4),
-                      StatefulBuilder(
-                        builder: (context, setState) {
-                          return ElevatedButton(
-                            onPressed: () {
-                              favoriteMeals.add(meal.idMeal);
-                              setState(() {
-                                isFavorited = !isFavorited; // Inverse l'état du favori
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent, // Fond transparent
-                              elevation: 0, // Pas d'ombre
-                              shape: const CircleBorder(), // Forme circulaire
-                            ),
-                            child: Icon(
-                              isFavorited ? Icons.favorite : Icons.favorite_border,
-                              color: isFavorited ? Colors.red : Colors.grey,
-                            ),
-                          );
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isFavorited = !isFavorited; // Inverse l'état du favori
+                          });
+                          widget.onFavoritePressed(widget.meal.idMeal); // Appelle la callback
                         },
+                        icon: Icon(
+                          isFavorited ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorited ? Colors.red : Colors.grey,
+                        ),
                       ),
                     ],
                   ),
