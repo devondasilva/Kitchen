@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 
 class Meal {
@@ -87,6 +85,8 @@ class MealDetailsPage extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text('Région: ${meal.strArea}',
                         style: const TextStyle(color: Colors.grey)),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.favorite, size: 16, color: Colors.grey),
                   ],
                 ),
                 const SizedBox(height: 16),

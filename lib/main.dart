@@ -1,7 +1,8 @@
+import 'package:KitchenApp/preHome.dart';
+import 'package:KitchenApp/registration.dart';
 import 'package:flutter/material.dart';//packages
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'home.dart';
-import 'login.dart';
 
 
 void main() {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: preHome(),
     );
   }
 }

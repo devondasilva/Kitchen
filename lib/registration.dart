@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart'; // Import your database helper
 
+
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
 

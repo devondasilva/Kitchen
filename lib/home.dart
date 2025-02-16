@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'meal.dart';
 import 'login.dart';
-import 'meal.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -168,7 +167,7 @@ class _HomePageState extends State<HomePage> {
                   delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
                       final meal = filteredMeals[index];
-                      return MealCard(meal: meal);
+                      return MealCard(meal: meal, isFavorited: false,);
                     },
                     childCount: filteredMeals.length,
                   ),
@@ -202,9 +201,11 @@ class _HomePageState extends State<HomePage> {
 }
 
 class MealCard extends StatelessWidget {
+  List<String> favoriteMeals = [];
   final Meal meal;
+  bool isFavorited = false; // État du favori
 
-  const MealCard({Key? key, required this.meal}) : super(key: key);
+   MealCard({Key? key, required this.meal, required this.isFavorited}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -282,6 +283,28 @@ class MealCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text('Région : ${meal.strArea}',
                           style: const TextStyle(color: Colors.grey)),
+                      const SizedBox(width: 4),
+                      StatefulBuilder(
+                        builder: (context, setState) {
+                          return ElevatedButton(
+                            onPressed: () {
+                              favoriteMeals.add(meal.idMeal);
+                              setState(() {
+                                isFavorited = !isFavorited; // Inverse l'état du favori
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent, // Fond transparent
+                              elevation: 0, // Pas d'ombre
+                              shape: const CircleBorder(), // Forme circulaire
+                            ),
+                            child: Icon(
+                              isFavorited ? Icons.favorite : Icons.favorite_border,
+                              color: isFavorited ? Colors.red : Colors.grey,
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ],
