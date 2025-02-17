@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'meal.dart';
 import 'login.dart';
-import 'meal.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
